@@ -1,0 +1,85 @@
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <limits>
+#include <string>
+#include <algorithm>  // Required for sort()
+
+using namespace std;
+
+double cosineSimilarity(const vector<int>& item1, const vector<int>& item2) {
+    double dotProduct = 0.0;
+    double magnitudeItem1 = 0.0;
+    double magnitudeItem2 = 0.0;
+
+    for (size_t i = 0; i < item1.size(); ++i) {
+        dotProduct += item1[i] * item2[i];
+        magnitudeItem1 += item1[i] * item1[i];
+        magnitudeItem2 += item2[i] * item2[i];
+    }
+
+    if (magnitudeItem1 == 0 || magnitudeItem2 == 0) {
+        return 0;  // Avoid division by zero if any item has no features
+    }
+
+    return dotProduct / (sqrt(magnitudeItem1) * sqrt(magnitudeItem2));
+}
+
+vector<int> recommendItems(const vector<vector<int>>& items, int targetItem) {
+    int numItems = items.size();
+    vector<double> similarities(numItems, 0.0);
+
+    for (int i = 0; i < numItems; ++i) {
+        if (i != targetItem) {
+            similarities[i] = cosineSimilarity(items[targetItem], items[i]);
+        }
+    }
+
+    vector<int> recommendedItems;
+    for (int i = 0; i < numItems; ++i) {
+        if (i != targetItem && similarities[i] > 0) {
+            recommendedItems.push_back(i);
+        }
+    }
+
+    sort(recommendedItems.begin(), recommendedItems.end(), [&similarities](int a, int b) {
+        return similarities[a] > similarities[b];
+    });
+
+    return recommendedItems;
+}
+
+void displayRecommendations(const vector<int>& recommendedItems, const vector<string>& movieNames) {
+    cout << "Recommended Movies based on similarity:" << endl;
+    for (size_t i = 0; i < recommendedItems.size(); ++i) {
+        cout << movieNames[recommendedItems[i]] << endl;
+    }
+}
+
+int main() {
+    vector<string> movieNames = {
+        "The Matrix",        // Action, Sci-Fi
+        "Inception",         // Action, Sci-Fi
+        "The Notebook",      // Drama, Romance
+        "Mad Max: Fury Road",// Action, Adventure, Sci-Fi
+        "Titanic",           // Drama, Romance
+    };
+
+    vector<vector<int>> items = {
+        {1, 1, 0, 0, 0}, // The Matrix (Action, Sci-Fi)
+        {1, 1, 0, 0, 0}, // Inception (Action, Sci-Fi)
+        {0, 0, 1, 1, 0}, // The Notebook (Drama, Romance)
+        {1, 1, 0, 0, 1}, // Mad Max: Fury Road (Action, Adventure, Sci-Fi)
+        {0, 0, 1, 1, 0}, // Titanic (Drama, Romance)
+    };
+
+    int targetItem;
+    cout << "Enter the movie ID (0-based index) to get recommendations: ";
+    cin >> targetItem;
+
+    vector<int> recommendedItems = recommendItems(items, targetItem);
+
+    displayRecommendations(recommendedItems, movieNames);
+
+    return 0;
+}
