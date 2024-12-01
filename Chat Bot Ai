@@ -1,0 +1,53 @@
+#include <iostream>
+#include <string>
+#include <algorithm>
+
+using namespace std;
+
+// Function to convert a string to lowercase (for case-insensitive comparison)
+string toLowerCase(const string& str) {
+    string lowerStr = str;
+    transform(lowerStr.begin(), lowerStr.end(), lowerStr.begin(), ::tolower);
+    return lowerStr;
+}
+
+// Function to handle user input and provide a response
+void chatResponse(const string& userInput) {
+    string input = toLowerCase(userInput);  // Convert input to lowercase to handle case-insensitivity
+
+    if (input.find("hello") != string::npos || input.find("hi") != string::npos) {
+        cout << "Chatbot: Hello! How can I help you today?" << endl;
+    } else if (input.find("how are you") != string::npos) {
+        cout << "Chatbot: I'm doing great, thank you! How about you?" << endl;
+    } else if (input.find("name") != string::npos) {
+        cout << "Chatbot: I'm Chatbot. What's your name?" << endl;
+    } else if (input.find("thank") != string::npos) {
+        cout << "Chatbot: You're welcome!" << endl;
+    } else if (input.find("bye") != string::npos || input.find("goodbye") != string::npos) {
+        cout << "Chatbot: Goodbye! Have a great day!" << endl;
+    } else {
+        cout << "Chatbot: I'm sorry, I didn't understand that. Could you please rephrase?" << endl;
+    }
+}
+
+int main() {
+    string userInput;
+
+    cout << "Welcome to the Chatbot! Type 'bye' to exit." << endl;
+
+    while (true) {
+        cout << "You: ";
+        getline(cin, userInput);  // Get user input
+
+        // Exit the chat if the user types 'bye' or 'goodbye'
+        if (toLowerCase(userInput).find("bye") != string::npos || toLowerCase(userInput).find("goodbye") != string::npos) {
+            chatResponse(userInput);
+            break;
+        }
+
+        // Process the user input and provide a response
+        chatResponse(userInput);
+    }
+
+    return 0;
+}
